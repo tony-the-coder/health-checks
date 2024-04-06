@@ -4,3 +4,4 @@ It sure has been a long time since I used the command line and not the VS Code e
 Now this is up in GitHub only right now
 Lets see I am doing this at 730PM
 GGGGGGGGGGGGGGGGGGGGGGGGGGRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRREEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAATTTTTTTTTTTTTTTTTTTTTT no wait GGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE
+Well there is a change now but no conflict because it is not letting me commit because it knows about this change maybe I should not have done the update thing 
