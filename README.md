@@ -5,3 +5,4 @@ Now this is up in GitHub only right now
 Lets see I am doing this at 730PM
 GGGGGGGGGGGGGGGGGGGGGGGGGGRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRREEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAATTTTTTTTTTTTTTTTTTTTTT no wait GGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE
 Well there is a change now but no conflict because it is not letting me commit because it knows about this change maybe I should not have done the update thing 
+Well, it worked I just forgot to open the file from the branch
