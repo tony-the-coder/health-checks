@@ -44,22 +44,18 @@ def check_disk_full(disk, min_gb, min_percent):
 
 
 def check_no_network():
-    """Returns True if it fails to resolve Google's URL or False if it fails"""
-    dns_attempts = 2
-    for _ in range(dns_attempts):
-        try:
-            socket.gethostbyname("www.gmail.com")
-            return False
-        # TODO #1
-        except socket.gaierror:
-            time.sleep(1)
+    """Returns True if network checks faile, False otherwise"""
 
     if platform.system() == "Windows":
         cmd = "ping -n 1 8.8.8.8 > NUL 2>&1"
     else:
         cmd = "ping -c 1 8.8.8.8 > /dev/null 2>&1"
-    # A 0 means the ping successfully pinged
-    return subprocess(cmd, shell=True) != 0
+    try:
+        # A 0 means the ping successfully pinged
+        return subprocess(cmd, shell=True) != 0
+    except subprocess.CalledProcessError:
+        # Will handle if the 'ping' command gives any errors
+        return True  # True will be returned if the 'ping' command is unsucessful
 
 
 def main():
