@@ -6,6 +6,7 @@ import psutil
 import time
 import platform
 import subprocess
+import speedtest as st
 
 
 def check_reboot():
@@ -50,12 +51,17 @@ def check_no_network():
         cmd = "ping -n 1 8.8.8.8 > NUL 2>&1"
     else:
         cmd = "ping -c 1 8.8.8.8 > /dev/null 2>&1"
-    try:
-        # A 0 means the ping successfully pinged
-        return subprocess(cmd, shell=True) != 0
-    except subprocess.CalledProcessError:
-        # Will handle if the 'ping' command gives any errors
-        return True  # True will be returned if the 'ping' command is unsucessful
+
+
+def check_speed():
+
+    test = st.Speedtest()
+    test.download()
+    test.upload()
+    results_dict = test.results.dict()
+    print("Download Speed:", round(results_dict["download"] / 1000000), "Mbps")
+    print("Download Speed:", round(results_dict["upload"] / 1000000), "Mbps")
+    # print("Ping:", results_dict["ping"], "ms")
 
 
 def main():
@@ -64,6 +70,7 @@ def main():
         (check_cpu_contrainer, "CPU load to high."),
         (check_root_full, "Root Partition fill"),
         (check_no_network, "No working network"),
+        (check_speed, "Checking internet speed not available"),
     ]
     everything_ok = True
     for check, msg in checks:
