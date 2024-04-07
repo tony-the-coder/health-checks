@@ -2,12 +2,16 @@ import os
 import sys
 import shutil
 import socket
-
+import psutil
 
 def check_root_full():
     """Returns True if the root partion is full, False otherwise"""
     return check_disk_full(disk="/", min_gb=2, min_percent=10)
 
+
+def check_cpu_contrainer():
+    """True if the cpu is having too much usage, False otherwise"""
+    return psutil.cpu_percent(1) > 75
 
 def check_no_network():
     """Returns True if it fails to resolve Google's URL or False if it fails"""
@@ -33,6 +37,7 @@ def check_disk_full(disk, min_gb, min_percent):
 def main():
     checks = [
         (check_reboot, "Pending Reboot"),
+        (check_cpu_contrainer, "CPU load to high.")
         (check_root_full, "Root Partition fill"),
         (check_no_network, "No working network"),
     ]
