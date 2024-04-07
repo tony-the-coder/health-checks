@@ -3,11 +3,22 @@ import sys
 import shutil
 import socket
 import psutil
+import time
+import platform
+import subprocess
 
 
 def check_reboot():
     """Returns True if the computer has a pending reboot"""
-    return os.path.exists("/run/reboot-required")
+
+    if platform.system() == "Linux":
+        return os.path.exists("/run/reboot-required")
+    elif platform.system() == "Windows":
+        # TODO: #2 Add functionality to check for Windows-Specific reboot checks
+        pass
+    else:
+        # Checks for reboots on other OS, but I am thinking that this is just a clean way to exit.
+        return False
 
 
 def check_root_full():
@@ -34,11 +45,21 @@ def check_disk_full(disk, min_gb, min_percent):
 
 def check_no_network():
     """Returns True if it fails to resolve Google's URL or False if it fails"""
-    try:
-        socket.gethostname("www.google.com")
-        return False
-    except:
-        return True
+    dns_attempts = 2
+    for _ in range(dns_attempts):
+        try:
+            socket.gethostbyname("www.gmail.com")
+            return False
+        # TODO #1
+        except socket.gaierror:
+            time.sleep(1)
+
+    if platform.system() == "Windows":
+        cmd = "ping -n 1 8.8.8.8 > NUL 2>&1"
+    else:
+        cmd = "ping -c 1 8.8.8.8 > /dev/null 2>&1"
+    # A 0 means the ping successfully pinged
+    return subprocess(cmd, shell=True) != 0
 
 
 def main():
@@ -52,7 +73,9 @@ def main():
     for check, msg in checks:
         if check():
             print(msg)
-            eveything_ok = False
+            everything_ok = False
+    if everything_ok:
+        print("Everything is okay")
     if not everything_ok:
         sys.exit(1)
 
