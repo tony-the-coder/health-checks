@@ -4,6 +4,13 @@ import shutil
 import socket
 import psutil
 
+
+
+def check_reboot():
+    """Returns True if the computer has a pending reboot"""
+    return os.path.exists("/run/reboot-required")
+
+
 def check_root_full():
     """Returns True if the root partion is full, False otherwise"""
     return check_disk_full(disk="/", min_gb=2, min_percent=10)
