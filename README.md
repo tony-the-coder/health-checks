@@ -1,16 +1,18 @@
-Oh well if it does not oh well
-This is the README file to get done with this course which is a good reminder but it is needed to get the Professional Certificate.
-Once I am done with this whole certificate, I will fell much better about my skills.
-It sure has been a long time since I used the command line and not the VS Code extension!
-Now this is up in GitHub only right now
-Lets see I am doing this at 730PM
-GGGGGGGGGGGGGGGGGGGGGGGGGGRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRREEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAATTTTTTTTTTTTTTTTTTTTTT no wait GGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE
-Well there is a change now but no conflict because it is not letting me commit because it knows about this change maybe I should not have done the update thing
-Well, it worked I just forgot to open the file from the branch
-<<<<<<< HEAD
-I really want this to just work already
+Windows and Linux both have a version of a task manager. This is not meant to replace but to supplment the existing task manager and to add information into one location without having to switch tabs.
 
-Will this cause the issue
-=======
-There was a conflict but it went away after I did a pull instead of saying the merge failed for some reason oh well I just need to move on. 
->>>>>>> b77aaab (Update README.md)
+Checks the health of a computer by looking at
+
+- If Root Directory is full
+- If the CPU is running over 75%
+- Check if the Disk is full
+- Check the Network Connection
+
+Currently being improved so that the script would work on both Windows and Linux system.
+
+Future updates would be to display the information from each check. For example,
+
+- Displaying the current CPU percentage,
+- how much storage is in use and how much is available,
+- network speed,
+- continiously run to send an alert if any of the constraints are seen
+- Creating a gui for whole program.
