@@ -49,8 +49,12 @@ def check_no_network():
 
     if platform.system() == "Windows":
         cmd = "ping -n 1 8.8.8.8 > NUL 2>&1"
+        result = subprocess.call(cmd, shell=True)
     else:
         cmd = "ping -c 1 8.8.8.8 > /dev/null 2>&1"
+        result = subprocess.call(cmd, shell=True)
+
+    return result != 0
 
 
 def check_speed():
@@ -61,7 +65,7 @@ def check_speed():
     results_dict = test.results.dict()
     print("Download Speed:", round(results_dict["download"] / 1000000), "Mbps")
     print("Download Speed:", round(results_dict["upload"] / 1000000), "Mbps")
-    # print("Ping:", results_dict["ping"], "ms")
+    print("Ping:", results_dict["ping"], "ms")
 
 
 def main():
@@ -78,6 +82,7 @@ def main():
             print(msg)
             everything_ok = False
     if everything_ok:
+        check_speed()
         print("Everything is okay")
     if not everything_ok:
         sys.exit(1)
