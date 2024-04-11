@@ -44,6 +44,7 @@ def check_disk_full(disk, min_gb, min_percent):
     return False
 
 
+# Function to check connecevtivity fef
 def check_no_network():
     """Returns True if network checks faile, False otherwise"""
 
