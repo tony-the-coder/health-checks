@@ -4,31 +4,58 @@ import platform
 import os
 
 
+def check_os():
+    """Will return the name of the OS"""
+    os_name = platform.system()
+    return os_name
+
+
 def check_reboot():
+    # Sets the os_name by calling the check_os() function.
+    os_name = check_os()
     """Returns True if the computer has a pending reboot"""
 
-    if platform.system() == "Linux":
+    # Checks for reboots on Linux
+    if os_name == "Linux":
         return os.path.exists("/run/reboot-required")
-    elif platform.system() == "Windows":
+    elif os_name == "Windows":
         # TODO: #2 Add functionality to check for Windows-Specific reboot checks
         pass
     else:
-        # Checks for reboots on other OS, but I am thinking that this is just a clean way to exit.
-        return False
+        """Returns a message if the operating system is not supported"""
+        return "Operating system not supported"
 
 
 def check_root_full():
-    """Returns True if the root partion is full, False otherwise"""
-    return check_disk_full(disk="/", min_gb=2, min_percent=10)
+    """Returns True if the Linux root partion is full, False otherwise"""
+    os_name = check_os()
+    if os_name == "Linux":
+        return check_disk_full(disk="/", min_gb=2, min_percent=10)
+    elif os_name == "Windows":
+        # TODO: #1 Add functionality to check for Windows-Specific root partition checks
+        pass
+    else:
+        """Returns a message if the operating system is not supported"""
+        return "Operating system not supported"
 
 
 def check_cpu_contrainer():
     """True if the cpu is having too much usage, False otherwise"""
-    return psutil.cpu_percent(1) > 75
+    os_name = check_os()
+    # Checks for CPU usage on Linux
+    if os_name == "Linux":
+        return psutil.cpu_percent(1) > 75
+    elif os_name == "Windows":
+        # TODO: #3 Add functionality to check for Windows-Specific CPU checks
+        pass
+    else:
+        """Returns a message if the operating system is not supported"""
+        return "Operating system not supported"
 
 
 def check_disk_full(disk, min_gb, min_percent):
-    """Returns True if there isn't enough disk space, False otherwise."""
+    """Verifies if the harddrive is full. This part is only a test. Will need to update this"""
+    # TODO: Show how much storage is used and how much remains.
     du = shutil.disk_usage(disk)
     # Calculate the percentage of free space
     percent_free = 100 * du.free / du.total
