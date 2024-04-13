@@ -4,28 +4,30 @@ import platform
 import os
 import win32api
 
+
 def check_os():
     """Will return the name of the OS"""
     os_name = platform.system()
     os_version = platform.version()
     print(f"OS: {os_name} {os_version}")
     return os_name, os_version
+
+
 # check_os()
+
 
 def check_reboot():
     # Sets the os_name by calling the check_os() function.
     os_name = check_os()
     """Checks for Linux-Specific reboot checks"""
 
-    
     if os_name == "Linux":
         return os.path.exists("/run/reboot-required")
-    
+
         # TODO: #2 Add functionality to check for Windows-Specific reboot checks
         # Windows doumentation on different API calls with direct link to the SM_SUTTINGDOWN information
         # https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-getsystemmetrics#:~:text=SM_SHUTTINGDOWN,is%20not%20supported.
-    
-    
+
     elif os_name == "Windows":
         """Checks for Windows-Specific reboot checks"""
 
@@ -49,6 +51,7 @@ def check_root_full():
     else:
         """Returns a message if the operating system is not supported"""
         return "Operating system not supported"
+
 
 def check_cpu_contrainer():
     """True if the cpu is having too much usage, False otherwise"""
