@@ -2,6 +2,8 @@ import shutil
 import psutil
 import platform
 import os
+import win32api
+
 
 
 def check_os():
@@ -9,12 +11,20 @@ def check_os():
     os_name = platform.system()
     os_version = platform.version()
     print(f"OS: {os_name} {os_version}")
+
     return os_name
+
+    return os_name, os_version
+
+
+# check_os()
+
 
 
 def check_reboot():
     # Sets the os_name by calling the check_os() function.
     os_name = check_os()
+
     """Returns True if the computer has a pending reboot"""
 
     # Checks for reboots on Linux
@@ -23,6 +33,23 @@ def check_reboot():
     elif os_name == "Windows":
         # TODO: #2 Add functionality to check for Windows-Specific reboot checks
         pass
+
+    """Checks for Linux-Specific reboot checks"""
+
+    if os_name == "Linux":
+        return os.path.exists("/run/reboot-required")
+
+        # Windows doumentation on different API calls with direct link to the SM_SUTTINGDOWN information
+        # https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-getsystemmetrics#:~:text=SM_SHUTTINGDOWN,is%20not%20supported.
+
+    elif os_name == "Windows":
+        """Checks for Windows-Specific reboot checks"""
+
+        if win32api.GetSystemMetrics(win32api.SM_SHUTTINGDOWN):
+            return True
+        else:
+            return False
+
     else:
         """Returns a message if the operating system is not supported"""
         return "Operating system not supported"
@@ -69,3 +96,4 @@ def check_disk_full(disk, min_gb, min_percent):
 
 
 check_os()
+
