@@ -1,5 +1,7 @@
 import os
 import sys
+import network_checks as nc
+import system_checks as sc
 import shutil
 import socket
 import psutil
@@ -69,13 +71,14 @@ def check_speed():
     print("Ping:", results_dict["ping"], "ms")
 
 
+
 def main():
     checks = [
-        (check_reboot, "Pending Reboot"),
-        (check_cpu_contrainer, "CPU load to high."),
-        (check_root_full, "Root Partition fill"),
-        (check_no_network, "No working network"),
-        (check_speed, "Checking internet speed not available"),
+        (sc.check_reboot, "Pending Reboot"),
+        (sc.check_cpu_contrainer, "CPU load to high."),
+        (sc.check_root_full, "Root Partition fill"),
+        (nc.check_no_network, "No working network"),
+        (nc.check_speed, "Checking internet speed not available"),
     ]
     everything_ok = True
     for check, msg in checks:
@@ -83,7 +86,7 @@ def main():
             print(msg)
             everything_ok = False
     if everything_ok:
-        check_speed()
+        nc.check_speed()
         print("Everything is okay")
     if not everything_ok:
         sys.exit(1)
