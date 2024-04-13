@@ -24,7 +24,6 @@ def check_reboot():
     if os_name == "Linux":
         return os.path.exists("/run/reboot-required")
 
-        # TODO: #2 Add functionality to check for Windows-Specific reboot checks
         # Windows doumentation on different API calls with direct link to the SM_SUTTINGDOWN information
         # https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-getsystemmetrics#:~:text=SM_SHUTTINGDOWN,is%20not%20supported.
 
