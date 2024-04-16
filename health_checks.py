@@ -1,95 +1,50 @@
-import os
 import sys
 import network_checks as nc
+import check_disks as cd
 import system_checks as sc
-import shutil
-import socket
-import psutil
+import utilities as ut
 import time
-import platform
-import subprocess
-import speedtest as st
-
-
-def check_reboot():
-    """Returns True if the computer has a pending reboot"""
-
-    if platform.system() == "Linux":
-        return os.path.exists("/run/reboot-required")
-    elif platform.system() == "Windows":
-        # TODO: #2 Add functionality to check for Windows-Specific reboot checks
-        pass
-    else:
-        # Checks for reboots on other OS, but I am thinking that this is just a clean way to exit.
-        return False
-
-
-def check_root_full():
-    """Returns True if the root partion is full, False otherwise"""
-    return check_disk_full(disk="/", min_gb=2, min_percent=10)
-
-
-def check_cpu_contrainer():
-    """True if the cpu is having too much usage, False otherwise"""
-    return psutil.cpu_percent(1) > 75
-
-
-def check_disk_full(disk, min_gb, min_percent):
-    """Returns True if there isn't enough disk space, False otherwise."""
-    du = shutil.disk_usage(disk)
-    # Calculate the percentage of free space
-    percent_free = 100 * du.free / du.total
-    # Calculate how many free gigabytes
-    gigabytes_free = du.free / 2**30
-    if gigabytes_free < min_gb or percent_free < min_percent:
-        return True
-    return False
-
-
-# Function to check connecevtivity fef
-def check_no_network():
-    """Returns True if network checks faile, False otherwise"""
-
-    if platform.system() == "Windows":
-        cmd = "ping -n 1 8.8.8.8 > NUL 2>&1"
-        result = subprocess.call(cmd, shell=True)
-    else:
-        cmd = "ping -c 1 8.8.8.8 > /dev/null 2>&1"
-        result = subprocess.call(cmd, shell=True)
-
-    return result != 0
-
-
-def check_speed():
-
-    test = st.Speedtest()
-    test.download()
-    test.upload()
-    results_dict = test.results.dict()
-    print("Download Speed:", round(results_dict["download"] / 1000000), "Mbps")
-    print("Download Speed:", round(results_dict["upload"] / 1000000), "Mbps")
-    print("Ping:", results_dict["ping"], "ms")
-
+import datetime as dt
+import os
+import psutil
 
 
 def main():
+    """We start with the time the scan is first initated."""
+    start_time = dt.datetime.now()  # Get current datetime
+    print("System checks started at ", start_time.strftime("%Y-%m-%d %H:%M:%S"))
+    os_output = ut.check_os()
+    os_info_string = "".join([str(x) for x in os_output])
+    print("The operating system currently be tested: ", os_info_string)
+
+    """Check is an array of tuples where each tuple calls an imported module and prings a message as the tests are run. """
     checks = [
-        (sc.check_reboot, "Pending Reboot"),
-        (sc.check_cpu_contrainer, "CPU load to high."),
-        (sc.check_root_full, "Root Partition fill"),
-        (nc.check_no_network, "No working network"),
-        (nc.check_speed, "Checking internet speed not available"),
+        (cd.check_disk_full, "Checking Disk Space"),
+        # (ut.check_os, "Checking Operating System")
+        # (sc.check_reboot, "Checking to see if a reboot is required"),
+        (nc.net_con, "Checking your connection"),
     ]
+    """Set the everything_ok variable to True that changes to False if any of the checks fail. The loop will iterate through the array and run each function which will then reset everything_okay if needed."""
     everything_ok = True
     for check, msg in checks:
+        print(msg)
+
         if check():
-            print(msg)
+            # print(f"Check '{msg}' failed")
             everything_ok = False
+
+    """Verifies the final value of everything_ok and prints a message"""
+    # TODO Create try/except for each test to be sure that script does not fail and enable logging with append to get a continiou log
     if everything_ok:
-        nc.check_speed()
+
         print("Everything is okay")
-    if not everything_ok:
+    else:
+        print(
+            "There is an error somewhere please look for it and let me know. Exiting..."
+        )
         sys.exit(1)
+    endtime = dt.datetime.now()  # Get current datetime
+    print("System checks ended at ", endtime.strftime("%Y-%m-%d %H:%M:%S"))
 
 
 main()
