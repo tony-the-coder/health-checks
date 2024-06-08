@@ -2,98 +2,99 @@ import shutil
 import psutil
 import platform
 import os
-import win32api
+import time
+import pywin32_system32
+from shared_checks import check_disk_usage  # Import from shared_checks
 
-
-
-def check_os():
-    """Will return the name of the OS"""
-    os_name = platform.system()
-    os_version = platform.version()
-    print(f"OS: {os_name} {os_version}")
-
-    return os_name
-
-    return os_name, os_version
-
-
-# check_os()
-
+try:
+    import win32api
+    import win32con
+except ImportError:
+    win32api = None
 
 
 def check_reboot():
-    # Sets the os_name by calling the check_os() function.
-    os_name = check_os()
-
-    """Returns True if the computer has a pending reboot"""
-
-    # Checks for reboots on Linux
-    if os_name == "Linux":
-        return os.path.exists("/run/reboot-required")
-    elif os_name == "Windows":
-        # TODO: #2 Add functionality to check for Windows-Specific reboot checks
-        pass
-
-    """Checks for Linux-Specific reboot checks"""
-
-    if os_name == "Linux":
-        return os.path.exists("/run/reboot-required")
-
-        # Windows doumentation on different API calls with direct link to the SM_SUTTINGDOWN information
-        # https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-getsystemmetrics#:~:text=SM_SHUTTINGDOWN,is%20not%20supported.
-
-    elif os_name == "Windows":
-        """Checks for Windows-Specific reboot checks"""
-
-        if win32api.GetSystemMetrics(win32api.SM_SHUTTINGDOWN):
-            return True
+    """Checks if a reboot is pending on Windows."""
+    if platform.system() == "Windows":
+        if win32api:  # Check if win32api is available
+            try:
+                return win32api.GetSystemMetrics(win32con.SM_SHUTTINGDOWN) != 0
+            except Exception as e:  # Catch potential errors with GetSystemMetrics
+                print(f"Error checking Windows reboot status: {e}")
+                return False
         else:
+            print("win32api module not available on this system.")
             return False
-
-    else:
-        """Returns a message if the operating system is not supported"""
-        return "Operating system not supported"
-
-
-def check_root_full():
-    """Returns True if the Linux root partion is full, False otherwise"""
-    os_name = check_os()
-    if os_name == "Linux":
-        return check_disk_full(disk="/", min_gb=2, min_percent=10)
-    elif os_name == "Windows":
-        # TODO: #1 Add functionality to check for Windows-Specific root partition checks
-        pass
-    else:
-        """Returns a message if the operating system is not supported"""
-        return "Operating system not supported"
-
-
-def check_cpu_contrainer():
-    """True if the cpu is having too much usage, False otherwise"""
-    os_name = check_os()
-    # Checks for CPU usage on Linux
-    if os_name == "Linux":
-        return psutil.cpu_percent(1) > 75
-    elif os_name == "Windows":
-        # TODO: #3 Add functionality to check for Windows-Specific CPU checks
-        pass
-    else:
-        """Returns a message if the operating system is not supported"""
-        return "Operating system not supported"
-
-
-def check_disk_full(disk, min_gb, min_percent):
-    """Verifies if the harddrive is full. This part is only a test. Will need to update this"""
-    # TODO: Show how much storage is used and how much remains.
-    du = shutil.disk_usage(disk)
-    # Calculate the percentage of free space
-    percent_free = 100 * du.free / du.total
-    # Calculate how many free gigabytes
-    gigabytes_free = du.free / 2**30
-    if gigabytes_free < min_gb or percent_free < min_percent:
-        return True
     return False
 
 
-check_os()
+def check_disk_usage(disks=["C:\\"], min_gb=2, min_percent=10):
+    """
+    Checks disk usage of specified disks or partitions on Windows.
 
+    Args:
+        disks (list): A list of disks or partitions to check (default: ["C:\\"]).
+        min_gb (float): Minimum free space in gigabytes required.
+        min_percent (float): Minimum percentage of free space required.
+
+    Returns:
+        list: A list of messages indicating disk usage issues, or an empty list if all okay.
+    """
+    issues = []
+    for disk in disks:
+        du = shutil.disk_usage(disk)
+        percent_free = 100 * du.free / du.total
+        gigabytes_free = du.free / 2**30
+
+        if gigabytes_free < min_gb:
+            issues.append(
+                f"Disk {disk} has less than {min_gb:.2f} GB free ({gigabytes_free:.2f} GB available)."
+            )
+        if percent_free < min_percent:
+            issues.append(
+                f"Disk {disk} has less than {min_percent:.2f}% free space ({percent_free:.2f}% available)."
+            )
+    return issues  # Disk usage is within limits
+
+
+def check_cpu_load(threshold=75, interval=15):
+    """
+    Checks the average CPU load over a specified interval on Windows.
+
+    Args:
+        threshold (float): Maximum allowed CPU load percentage (default: 75).
+        interval (int): Time interval (in seconds) to calculate average load (default: 1).
+
+    Returns:
+        str: A message indicating the CPU load status, or None if it's okay.
+    """
+    cpu_percent = psutil.cpu_percent(interval=interval)
+    if cpu_percent > threshold:
+        return (
+            f"CPU load is {cpu_percent:.2f}%, exceeding the threshold of {threshold}%"
+        )
+    else:
+        return f"CPU load is {cpu_percent:.2f}% within the threshold of {threshold}"  # here
+
+
+def check_uptime():
+    """Returns the system uptime in seconds on Windows."""
+    boot_time = psutil.boot_time()
+    current_time = time.time()
+    uptime_seconds = current_time - boot_time
+
+    days = uptime_seconds // (24 * 60 * 60)
+    hours = (uptime_seconds % (24 * 60 * 60)) // (60 * 60)
+    minutes = (uptime_seconds % (60 * 60)) // 60
+    seconds = round(uptime_seconds % 60, 2)
+
+    uptime_str = f"As of {time.strftime('%Y-%m-%d %H:%M:%S')}, system has been running for {days} days, {hours} hours, {minutes} minutes, {seconds} seconds"
+    # print(uptime_str)
+    return uptime_seconds, uptime_str
+
+
+# if __name__ == "__main__":
+# print(check_reboot())
+# print(check_disk_usage())
+# print(check_cpu_load())
+# print(check_uptime())
